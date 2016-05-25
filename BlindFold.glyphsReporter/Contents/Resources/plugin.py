@@ -20,90 +20,28 @@ class BlindFold(ReporterPlugin):
 	def settings(self):
 
 		###################################
-		## Rotation Slider for Context Menu:
 		self.name = 'Blindfold'
-
-		# Create Vanilla window and group with controls
-		viewWidth = 160
-		viewHeight = 65 # 65
-		self.sliderMenuView = Window((viewWidth, viewHeight))
-		self.sliderMenuView.group = Group((0, 0, viewWidth, viewHeight)) # (0, 0, viewWidth, viewHeight)
-		self.sliderMenuView.group.line = HorizontalLine((10, 10, -10, 1))
-		# self.sliderMenuView.group.text = TextBox((10, 20, -10, -10), self.name)
-		# self.sliderMenuView.group.PUButton = PopUpButton((10, 40, -10, 20), ["x-Height", "Cap-Height"], sizeStyle="small", callback=self.PopUpButtonCallback)
-		self.sliderMenuView.group.PUButton = RadioGroup((10, 20, -10, 40), ["Blindfold: x-Height", "Blindfold: Cap-Height"], sizeStyle="small", callback=self.PopUpButtonCallback)
-		self.sliderMenuView.group.PUButton.set(0)
-
-		## Define the menu
-		self.generalContextMenus = [
-		    {"view": self.sliderMenuView.group.getNSView()}
-		]
-		###################################
+		self.toggleNames = [u"x-Height", u"Cap-Height"]
+		self.generalContextMenus = [ {"name": u"Blindfold → %s" % self.toggleNames[0], "action": self.toggleHeight }, ]
 
 		# self.menuName = Glyphs.localize({'en': u'* Blindfold 🙈', 'de': u'* Blindfold 🙈'})
 		self.menuName = Glyphs.localize({'en': u'* Blindfold'})
+		self.showXHeight = True
 
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#		UNDER CONSTRUCTION
-# 		# mainMenu = NSMenuItem.alloc().init()
-# 		# mainMenu.setTitle_("Main Item")
-
-# 		subMenu = NSMenu.alloc().init()
-# 		subMenu.addItemWithTitle_action_keyEquivalent_("Sub Menu here", self.RefreshView, "")
-# 		print "\n__SubMenu:\n%s\n" % subMenu
-
-# 		### IRGENDWAS VON DEN SACHEN HIER: (?)
-
-# 		# self.addMenuItemsForEvent_toMenu_(subMenu, self.generalContextMenus)
-# 		# print "\n__generalContextMenus:\n%s\n" % self.generalContextMenus
-
-# 		# mainMenu.setSubmenu_(subMenu)
-# 		# self.addMenuItemsForEvent_toMenu_(mainMenu, self.generalContextMenus)
-
-# 		# self.generalContextMenus.setSubmenu(subMenu)
-# 		# self.generalContextMenus.append(subMenu)
-
-
-# 	### DIESE addMenuItemsForEvent_toMenu_??
-# 	# def addMenuItemsForEvent_toMenu_(self, event, contextMenu):
-# 	# 	'''
-# 	# 	The event can tell you where the user had clicked.
-# 	# 	'''
-# 	# 	try:
-			
-# 	# 		if self.generalContextMenus:
-# 	# 			setUpMenuHelper(contextMenu, self.generalContextMenus, self)
-			
-# 	# 		if hasattr(self, 'conditionalContextMenus'):
-# 	# 			contextMenus = self.conditionalContextMenus()
-# 	# 			if contextMenus:
-# 	# 				setUpMenuHelper(contextMenu, contextMenus, self)
-
-# 	# 	except:
-# 	# 		self.logError(traceback.format_exc())
-
-# 	### ODER DIESE addMenuItemsForEvent_toMenu_??
-# 	def addMenuItemsForEvent_toMenu_(self, theEvent, theMenu):
-# 		try:
-			
-# 			if hasattr(self, 'conditionalContextMenus'):
-# 				contextMenus = self.conditionalContextMenus()
-			
-# 				if contextMenus:
-# 					# Todo: Make sure that the index is 0 for all items
-# 					setUpMenuHelper(theMenu, contextMenus, self)
-					
-# 					newSeparator = NSMenuItem.separatorItem()
-# 					theMenu.insertItem_atIndex_(newSeparator, 1)
-					
-# 		except:
-# 			self.logError(traceback.format_exc())
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+	def toggleHeight(self):
+		switch = bool(self.showXHeight)
+		## sexy way:
+		self.generalContextMenus = [ {"name": u"Blindfold → %s" % self.toggleNames[switch], "action": self.toggleHeight }, ]
+		self.showXHeight = not self.showXHeight
+		self.RefreshView()
+		## dusty way:
+		# if self.showXHeight:
+		# 	self.generalContextMenus = [ {"name": u"Blindfold → %s" % self.toggleNames[1], "action": self.toggleHeight }, ]
+		# 	self.showXHeight = False
+		# else:
+		# 	self.generalContextMenus = [ {"name": u"Blindfold → %s" % self.toggleNames[0], "action": self.toggleHeight }, ]
+		# 	self.showXHeight = True
+		# self.RefreshView()
 
 
 	def background(self, layer):  # def foreground(self, layer):
@@ -148,10 +86,11 @@ class BlindFold(ReporterPlugin):
 			
 			''' Rect 2: Ascender '''	
 			# if self.sliderMenuView.group.PUButton.getTitle() == "Cap-Height":
-			if self.sliderMenuView.group.PUButton.get() == 1:
+			# if self.sliderMenuView.group.PUButton.get() == 1:
+			if self.showXHeight:
 			 	y = layer.glyphMetrics()[2] # capHeight
 			# if self.sliderMenuView.group.PUButton.getTitle() == "x-Height":
-			if self.sliderMenuView.group.PUButton.get() == 0:
+			else:
 			 	y = layer.glyphMetrics()[4] # xHeight
 						
 			height = layer.glyphMetrics()[1] + moreBlack - y + moreBlack # ascender - y			
@@ -168,5 +107,5 @@ class BlindFold(ReporterPlugin):
 		except:
 			pass
 
-	def PopUpButtonCallback(self, sender):
-		self.RefreshView()
+	# def PopUpButtonCallback(self, sender):
+	# 	self.RefreshView()
