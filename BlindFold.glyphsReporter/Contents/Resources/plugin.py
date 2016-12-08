@@ -25,7 +25,7 @@ class BlindFold(ReporterPlugin):
 		self.generalContextMenus = [ {"name": u"Blindfold → %s" % self.toggleNames[0], "action": self.toggleHeight }, ]
 
 		# self.menuName = Glyphs.localize({'en': u'* Blindfold 🙈', 'de': u'* Blindfold 🙈'})
-		self.menuName = Glyphs.localize({'en': u'* Blindfold'})
+		self.menuName = Glyphs.localize({'en': u'Blindfold'})
 		self.showXHeight = True
 
 	def toggleHeight(self):
