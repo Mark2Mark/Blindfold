@@ -48,9 +48,9 @@ class BlindFold(ReporterPlugin):
 
 	def inactiveLayers(self, layer):
 		self.drawRect(layer, self.getScale() )
-		# inactiveLayers() overwrites Glyphs built-in drawing,
-		# hence redo drawing here:
-		self.redrawLayer(layer)
+
+	def needsExtraMainOutlineDrawingForInactiveLayer_(self, Layer):
+		return True
 
 	def preview(self, layer):
 		# preview() overwrites Glyphs built-in drawing,
