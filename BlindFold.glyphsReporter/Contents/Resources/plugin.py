@@ -44,17 +44,17 @@ class BlindFold(ReporterPlugin):
 
 
 	def background(self, layer):  # def foreground(self, layer):
-		self.drawRect(layer, self.getScale() )
+		self.drawRect(layer, self.getScale())
 
 	def inactiveLayers(self, layer):
-		self.drawRect(layer, self.getScale() )
+		self.drawRect(layer, self.getScale())
 
 	def needsExtraMainOutlineDrawingForInactiveLayer_(self, Layer):
 		return True
 
 	def preview(self, layer):
 		# preview() overwrites Glyphs built-in drawing,
-		# hence redo drawing here:		
+		# hence redo drawing here:
 		self.redrawLayer(layer)
 
 	def redrawLayer(self, layer):
@@ -63,7 +63,7 @@ class BlindFold(ReporterPlugin):
 			layer.bezierPath.fill()
 		if layer.components:
 			for component in layer.components:
-				component.bezierPath.fill()			
+				component.bezierPath.fill()
 
 	def drawRect(self, layer, scale):
 		view = self.controller.graphicView()
