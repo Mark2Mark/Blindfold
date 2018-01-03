@@ -48,7 +48,10 @@ class BlindFold(ReporterPlugin):
 
 	def inactiveLayers(self, layer):
 		self.drawRect(layer, self.getScale())
-
+	
+	def preview(self, layer):
+		pass
+	
 	def needsExtraMainOutlineDrawingForInactiveLayer_(self, Layer):
 		return True
 
