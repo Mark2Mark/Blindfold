@@ -12,7 +12,6 @@
 ###########################################################################################################
 
 from GlyphsApp.plugins import *
-from vanilla import *
 import math
 
 class BlindFold(ReporterPlugin):
