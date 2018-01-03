@@ -73,20 +73,19 @@ class BlindFold(ReporterPlugin):
 			height = (y * -1) + 1 # +1 closes the tiny gap
 			NSBezierPath.fillRect_( ( (relativePosition[0] + UcLcCompensator, y), ( ( math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale) , height ) ) ) )
 			
-			''' Rect 2: Ascender '''	
+			''' Rect 2: Ascender '''
 			# if self.sliderMenuView.group.PUButton.getTitle() == "Cap-Height":
 			# if self.sliderMenuView.group.PUButton.get() == 1:
 			if self.showXHeight:
-			 	y = layer.glyphMetrics()[2] # capHeight
+				y = layer.glyphMetrics()[2] # capHeight
 			# if self.sliderMenuView.group.PUButton.getTitle() == "x-Height":
 			else:
-			 	y = layer.glyphMetrics()[4] # xHeight
-						
+				y = layer.glyphMetrics()[4] # xHeight
+			
 			height = layer.glyphMetrics()[1] + moreBlack - y + moreBlack # ascender - y			
 			NSBezierPath.fillRect_( ( (relativePosition[0] + UcLcCompensator, y), ( ( math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale) , height ) ) ) )
 		except: pass
-
-
+	
 	def RefreshView(self):
 		try:
 			Glyphs = NSApplication.sharedApplication()
