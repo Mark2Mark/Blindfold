@@ -52,19 +52,6 @@ class BlindFold(ReporterPlugin):
 	def needsExtraMainOutlineDrawingForInactiveLayer_(self, Layer):
 		return True
 
-	def preview(self, layer):
-		# preview() overwrites Glyphs built-in drawing,
-		# hence redo drawing here:
-		self.redrawLayer(layer)
-
-	def redrawLayer(self, layer):
-		NSColor.blackColor().set()
-		if layer.paths:
-			layer.bezierPath.fill()
-		if layer.components:
-			for component in layer.components:
-				component.bezierPath.fill()
-
 	def drawRect(self, layer, scale):
 		view = self.controller.graphicView()
 		Visible = view.visibleRect()
