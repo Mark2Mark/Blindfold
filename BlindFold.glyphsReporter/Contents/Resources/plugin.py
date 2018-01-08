@@ -52,6 +52,7 @@ class BlindFold(ReporterPlugin):
 	def preview(self, layer):
 		pass
 	
+	# Keep original drawing for inactive layers:
 	def needsExtraMainOutlineDrawingForInactiveLayer_(self, Layer):
 		return True
 
