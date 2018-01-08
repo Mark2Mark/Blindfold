@@ -12,7 +12,6 @@
 ###########################################################################################################
 
 from GlyphsApp.plugins import *
-from vanilla import *
 import math
 
 class BlindFold(ReporterPlugin):
@@ -45,26 +44,16 @@ class BlindFold(ReporterPlugin):
 
 
 	def background(self, layer):  # def foreground(self, layer):
-		self.drawRect(layer, self.getScale() )
+		self.drawRect(layer, self.getScale())
 
 	def inactiveLayers(self, layer):
-		self.drawRect(layer, self.getScale() )
-		# inactiveLayers() overwrites Glyphs built-in drawing,
-		# hence redo drawing here:
-		self.redrawLayer(layer)
-
+		self.drawRect(layer, self.getScale())
+	
 	def preview(self, layer):
-		# preview() overwrites Glyphs built-in drawing,
-		# hence redo drawing here:		
-		self.redrawLayer(layer)
-
-	def redrawLayer(self, layer):
-		NSColor.blackColor().set()
-		if layer.paths:
-			layer.bezierPath.fill()
-		if layer.components:
-			for component in layer.components:
-				component.bezierPath.fill()			
+		pass
+	
+	def needsExtraMainOutlineDrawingForInactiveLayer_(self, Layer):
+		return True
 
 	def drawRect(self, layer, scale):
 		view = self.controller.graphicView()
@@ -84,20 +73,19 @@ class BlindFold(ReporterPlugin):
 			height = (y * -1) + 1 # +1 closes the tiny gap
 			NSBezierPath.fillRect_( ( (relativePosition[0] + UcLcCompensator, y), ( ( math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale) , height ) ) ) )
 			
-			''' Rect 2: Ascender '''	
+			''' Rect 2: Ascender '''
 			# if self.sliderMenuView.group.PUButton.getTitle() == "Cap-Height":
 			# if self.sliderMenuView.group.PUButton.get() == 1:
 			if self.showXHeight:
-			 	y = layer.glyphMetrics()[2] # capHeight
+				y = layer.glyphMetrics()[2] # capHeight
 			# if self.sliderMenuView.group.PUButton.getTitle() == "x-Height":
 			else:
-			 	y = layer.glyphMetrics()[4] # xHeight
-						
+				y = layer.glyphMetrics()[4] # xHeight
+			
 			height = layer.glyphMetrics()[1] + moreBlack - y + moreBlack # ascender - y			
 			NSBezierPath.fillRect_( ( (relativePosition[0] + UcLcCompensator, y), ( ( math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale) , height ) ) ) )
 		except: pass
-
-
+	
 	def RefreshView(self):
 		try:
 			Glyphs = NSApplication.sharedApplication()
