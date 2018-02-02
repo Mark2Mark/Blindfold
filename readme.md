@@ -6,11 +6,12 @@
 
 ## Plugin for Glyphsapp
 
-This is a Plugin for the [Glyphs font editor](http://glyphsapp.com/). It blackens out everything beyond the xHeight. Useful for Spacing and Kerning because the xHeight is what matters most here.
+This is a Plugin for the [Glyphs font editor](http://glyphsapp.com/). It blackens out everything beyond the xHeight or CapHeight. Useful for Spacing and Kerning because the xHeight or CapHeight is what matters most.
 
-### How to use
+### Install
 
-Download or clone the whole `Glyphsapp-Plugins`repo (it will contain more plugins soon) and copy the `*.glyphsReporter` into your Glyphsapp Plugins folder (eg. `/Library/Application\ Support/Glyphs/Plugins`), restart Glyphs and when ever you need it, toggle `Show Rotated` from the view menu.
+1. Install via the Plugin Manager in Glyphs.
+2. Restart Glyphs.
 
 ### Examples
 
