@@ -14,14 +14,17 @@
 from GlyphsApp.plugins import *
 import math
 
+
 class BlindFold(ReporterPlugin):
 
 	def settings(self):
-
-		###################################
 		self.name = 'Blindfold'
+		self.thisMenuTitle = {"name": u"%s:" % self.name, "action": None }
 		self.toggleNames = [u"x-Height", u"Cap-Height"]
-		self.generalContextMenus = [ {"name": u"Blindfold → %s" % self.toggleNames[0], "action": self.toggleHeight }, ]
+		self.generalContextMenus = [
+		self.thisMenuTitle,
+		{"name": u"%s" % self.toggleNames[0], "action": self.toggleHeight },
+		]
 
 		# self.menuName = Glyphs.localize({'en': u'* Blindfold 🙈', 'de': u'* Blindfold 🙈'})
 		self.menuName = Glyphs.localize({'en': u'Blindfold'})
@@ -30,17 +33,11 @@ class BlindFold(ReporterPlugin):
 	def toggleHeight(self):
 		switch = bool(self.showXHeight)
 		## sexy way:
-		self.generalContextMenus = [ {"name": u"Blindfold → %s" % self.toggleNames[switch], "action": self.toggleHeight }, ]
+		self.generalContextMenus = [
+		self.thisMenuTitle,
+		{"name": u"%s" % self.toggleNames[switch], "action": self.toggleHeight }, ]
 		self.showXHeight = not self.showXHeight
 		self.RefreshView()
-		## dusty way:
-		# if self.showXHeight:
-		# 	self.generalContextMenus = [ {"name": u"Blindfold → %s" % self.toggleNames[1], "action": self.toggleHeight }, ]
-		# 	self.showXHeight = False
-		# else:
-		# 	self.generalContextMenus = [ {"name": u"Blindfold → %s" % self.toggleNames[0], "action": self.toggleHeight }, ]
-		# 	self.showXHeight = True
-		# self.RefreshView()
 
 
 	def background(self, layer):  # def foreground(self, layer):
@@ -96,5 +93,3 @@ class BlindFold(ReporterPlugin):
 		except:
 			pass
 
-	# def PopUpButtonCallback(self, sender):
-	# 	self.RefreshView()
