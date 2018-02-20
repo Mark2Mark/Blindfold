@@ -22,8 +22,8 @@ class BlindFold(ReporterPlugin):
 		self.thisMenuTitle = {"name": u"%s:" % self.name, "action": None }
 		self.toggleNames = [u"x-Height", u"Cap-Height"]
 		self.generalContextMenus = [
-		self.thisMenuTitle,
-		{"name": u"%s" % self.toggleNames[0], "action": self.toggleHeight },
+			self.thisMenuTitle,
+			{"name": u"%s" % self.toggleNames[0], "action": self.toggleHeight },
 		]
 
 		# self.menuName = Glyphs.localize({'en': u'* Blindfold 🙈', 'de': u'* Blindfold 🙈'})
@@ -34,8 +34,9 @@ class BlindFold(ReporterPlugin):
 		switch = bool(self.showXHeight)
 		## sexy way:
 		self.generalContextMenus = [
-		self.thisMenuTitle,
-		{"name": u"%s" % self.toggleNames[switch], "action": self.toggleHeight }, ]
+			self.thisMenuTitle,
+			{"name": u"%s" % self.toggleNames[switch], "action": self.toggleHeight },
+		]
 		self.showXHeight = not self.showXHeight
 		self.RefreshView()
 
