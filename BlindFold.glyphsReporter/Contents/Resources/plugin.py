@@ -21,27 +21,47 @@ class BlindFold(ReporterPlugin):
 		self.name = 'Blindfold'
 		self.thisMenuTitle = {"name": u"%s:" % self.name, "action": None }
 		self.toggleNames = [u"x-Height", u"Cap-Height"]
+		self.toggleShadeNames = [u"White", u"Black"]
 		self.generalContextMenus = [
 			self.thisMenuTitle,
 			{"name": u"%s" % self.toggleNames[0], "action": self.toggleHeight },
+			#{"name": u"%s" % self.toggleShadeNames[0], "action": self.toggleShade },
 		]
 
 		# self.menuName = Glyphs.localize({'en': u'* Blindfold 🙈', 'de': u'* Blindfold 🙈'})
 		self.menuName = Glyphs.localize({'en': u'Blindfold'})
 		self.showXHeight = True
+		self.paintBlack = True
 
 	def toggleHeight(self):
 		switch = bool(self.showXHeight)
-		## sexy way:
 		self.generalContextMenus = [
 			self.thisMenuTitle,
 			{"name": u"%s" % self.toggleNames[switch], "action": self.toggleHeight },
+			#{"name": u"%s" % self.toggleShadeNames[self.getIntValue(self.paintBlack)], "action": self.toggleShade },
 		]
 		self.showXHeight = not self.showXHeight
 		self.RefreshView()
 
+	def toggleShade(self):
+		switch = bool(self.paintBlack)
+		self.generalContextMenus = [
+			self.thisMenuTitle,
+			{"name": u"%s" % self.toggleNames[self.getIntValue(self.showXHeight)], "action": self.toggleHeight },
+			#{"name": u"%s" % self.toggleShadeNames[switch], "action": self.toggleShade },
+		]
+		self.paintBlack = not self.paintBlack
+		self.RefreshView()
 
-	def background(self, layer):  # def foreground(self, layer):
+
+	def getIntValue(self, boolVar):
+		if boolVar is not True:
+			return 1
+		else:
+			return 0
+
+
+	def foreground(self, layer): # def background(self, layer):
 		self.drawRect(layer, self.getScale())
 
 	def inactiveLayers(self, layer):
@@ -65,7 +85,10 @@ class BlindFold(ReporterPlugin):
 		moreBlack = 70  # Optional: Additional Buffer to top and bottom
 
 		try:
-			NSColor.colorWithCalibratedRed_green_blue_alpha_( 0, 0, 0, 1 ).set()
+			if self.paintBlack is True:
+				NSColor.blackColor().set()
+			else:
+				NSColor.whiteColor().set()
 			
 			'''	Rect 1: Descender '''
 			y = layer.glyphMetrics()[3] - moreBlack  # descender
