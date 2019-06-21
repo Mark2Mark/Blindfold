@@ -11,20 +11,22 @@
 #
 ###########################################################################################################
 
+from GlyphsApp import *
 from GlyphsApp.plugins import *
 import math
 
+glyphsVersion = float(wrapperVersion)
 
 class BlindFold(ReporterPlugin):
 
 	def settings(self):
 		self.name = 'Blindfold'
 		self.thisMenuTitle = {"name": u"%s:" % self.name, "action": None }
-		self.toggleNames = [u"x-Height", u"Cap-Height"]
-		self.toggleShadeNames = [u"White", u"Black"]
+		self.toggleNames = ["x-Height", "Cap-Height"]
+		self.toggleShadeNames = ["White", "Black"]
 		self.generalContextMenus = [
 			self.thisMenuTitle,
-			{"name": u"%s" % self.toggleNames[0], "action": self.toggleHeight },
+			{"name": u"%s" % self.toggleNames[0], "action": self.toggleHeight},
 			#{"name": u"%s" % self.toggleShadeNames[0], "action": self.toggleShade },
 		]
 
@@ -37,8 +39,8 @@ class BlindFold(ReporterPlugin):
 		switch = bool(self.showXHeight)
 		self.generalContextMenus = [
 			self.thisMenuTitle,
-			{"name": u"%s" % self.toggleNames[switch], "action": self.toggleHeight },
-			#{"name": u"%s" % self.toggleShadeNames[self.getIntValue(self.paintBlack)], "action": self.toggleShade },
+			{"name": u"%s" % self.toggleNames[switch], "action": self.toggleHeight},
+			#{"name": u"%s" % self.toggleShadeNames[int(self.paintBlack)], "action": self.toggleShade},
 		]
 		self.showXHeight = not self.showXHeight
 		self.RefreshView()
@@ -47,33 +49,63 @@ class BlindFold(ReporterPlugin):
 		switch = bool(self.paintBlack)
 		self.generalContextMenus = [
 			self.thisMenuTitle,
-			{"name": u"%s" % self.toggleNames[self.getIntValue(self.showXHeight)], "action": self.toggleHeight },
+			{"name": u"%s" % self.toggleNames[int(self.showXHeight)], "action": self.toggleHeight},
 			#{"name": u"%s" % self.toggleShadeNames[switch], "action": self.toggleShade },
 		]
 		self.paintBlack = not self.paintBlack
 		self.RefreshView()
 
-
-	def getIntValue(self, boolVar):
-		if boolVar is not True:
-			return 1
-		else:
-			return 0
-
-
+	@objc.python_method
 	def foreground(self, layer): # def background(self, layer):
 		self.drawRect(layer, self.getScale())
 
-	def inactiveLayers(self, layer):
+	@objc.python_method
+	def inactiveLayerBackground(self, layer):
 		self.drawRect(layer, self.getScale())
-	
-	def preview(self, layer):
-		pass
-	
+
 	# Keep original drawing for inactive layers:
 	def needsExtraMainOutlineDrawingForInactiveLayer_(self, Layer):
 		return True
 
+
+	@objc.python_method
+	def topY(self, layer): # coulf be used to automate the height
+		if glyphsVersion >= 3:
+			return layer.associatedFontMaster().topHeightForLayer_(layer)
+		else:
+			if layer.parent.subCategory == "Lowercase":
+				return layer.associatedFontMaster().xHeight
+			else:
+				return layer.associatedFontMaster().capHeight
+
+	@objc.python_method
+	def ascender(self, layer):
+		if glyphsVersion >= 3:
+			return layer.associatedFontMaster().ascenderForLayer_(layer)
+		else:
+			return layer.associatedFontMaster().ascender
+
+	@objc.python_method
+	def capHeight(self, layer):
+		if glyphsVersion >= 3:
+			return layer.associatedFontMaster().metricForKey_layer_(GSMetricsKeyCapHeight, layer)
+		else:
+			return layer.associatedFontMaster().capHeight
+
+	@objc.python_method
+	def xHeight(self, layer):
+		if glyphsVersion >= 3:
+			return layer.associatedFontMaster().xHeightForLayer_(layer)
+		else:
+			return layer.associatedFontMaster().xHeight
+
+	@objc.python_method
+	def descender(self, layer):
+		if glyphsVersion >= 3:
+			return layer.associatedFontMaster().descenderForLayer_(layer)
+		else:
+			return layer.associatedFontMaster().descender
+	@objc.python_method
 	def drawRect(self, layer, scale):
 		view = self.controller.graphicView()
 		Visible = view.visibleRect()
@@ -89,25 +121,25 @@ class BlindFold(ReporterPlugin):
 				NSColor.blackColor().set()
 			else:
 				NSColor.whiteColor().set()
-			
+
 			'''	Rect 1: Descender '''
-			y = layer.glyphMetrics()[3] - moreBlack  # descender
+			y = self.descender(layer) - moreBlack  # descender
 			height = (y * -1) + 1 # +1 closes the tiny gap
-			NSBezierPath.fillRect_( ( (relativePosition[0] + UcLcCompensator, y), ( ( math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale) , height ) ) ) )
-			
+			NSBezierPath.fillRect_(((relativePosition[0] + UcLcCompensator, y), ((math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale), height))))
+
 			''' Rect 2: Ascender '''
 			# if self.sliderMenuView.group.PUButton.getTitle() == "Cap-Height":
 			# if self.sliderMenuView.group.PUButton.get() == 1:
 			if self.showXHeight:
-				y = layer.glyphMetrics()[2] # capHeight
+				y = self.xHeight(layer) # xHeight
 			# if self.sliderMenuView.group.PUButton.getTitle() == "x-Height":
 			else:
-				y = layer.glyphMetrics()[4] # xHeight
-			
-			height = layer.glyphMetrics()[1] + moreBlack - y + moreBlack # ascender - y			
-			NSBezierPath.fillRect_( ( (relativePosition[0] + UcLcCompensator, y), ( ( math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale) , height ) ) ) )
+				y = self.capHeight(layer) # capHeight
+
+			height = self.ascender(layer) + moreBlack - y + moreBlack # ascender - y
+			NSBezierPath.fillRect_(((relativePosition[0] + UcLcCompensator, y), ((math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale), height))))
 		except: pass
-	
+
 	def RefreshView(self):
 		try:
 			Glyphs = NSApplication.sharedApplication()
