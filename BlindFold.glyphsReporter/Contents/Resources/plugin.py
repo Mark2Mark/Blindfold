@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import division, print_function, unicode_literals
 
 ###########################################################################################################
 #
@@ -13,25 +14,64 @@
 
 from GlyphsApp import *
 from GlyphsApp.plugins import *
-import math
+from math import floor
 
 glyphsVersion = float(wrapperVersion)
 
 class BlindFold(ReporterPlugin):
 
+	@objc.python_method
 	def settings(self):
-		self.name = 'Blindfold'
-		self.thisMenuTitle = {"name": u"%s:" % self.name, "action": None }
-		self.toggleNames = ["x-Height", "Cap-Height"]
-		self.toggleShadeNames = ["White", "Black"]
+		self.thisMenuTitle = {
+			"name": Glyphs.localize({
+				'en': 'Show Blindfold at:',
+				'de': 'Blenden anzeigen auf:',
+				'fr': 'Afficher bandeaux à:',
+				'es': 'Mostrar vendas a la:',
+				}),
+			"action": None,
+			}
+		self.toggleNames = (
+			Glyphs.localize({
+				'en': 'Cap Height',
+				'de': 'Versalhöhe',
+				'fr': 'Hauteur des capitales',
+				'es': 'Altura de mayúsculas',
+				}),
+			Glyphs.localize({
+				'en': 'x-Height',
+				'de': 'Mittellänge',
+				'fr': 'Hauteur d’x',
+				'es': 'Altura de x',
+				}),
+			)
+		self.toggleShadeNames = (
+			Glyphs.localize({
+				'en': 'White',
+				'de': 'Weiß',
+				'fr': 'Blanc',
+				'es': 'Blanco',
+				}),
+			Glyphs.localize({
+				'en': 'Black',
+				'de': 'Schwarz',
+				'fr': 'Noir',
+				'es': 'Negro',
+				}),
+			)
 		self.generalContextMenus = [
 			self.thisMenuTitle,
-			{"name": u"%s" % self.toggleNames[0], "action": self.toggleHeight},
+			{"name": self.toggleNames[0], "action": self.toggleHeight},
 			#{"name": u"%s" % self.toggleShadeNames[0], "action": self.toggleShade },
 		]
 
 		# self.menuName = Glyphs.localize({'en': u'* Blindfold 🙈', 'de': u'* Blindfold 🙈'})
-		self.menuName = Glyphs.localize({'en': u'Blindfold'})
+		self.menuName = Glyphs.localize({
+			'en': 'Blindfold',
+			'de': 'Blenden',
+			'fr': 'bandeaux',
+			'es': 'vendas',
+			})
 		self.showXHeight = True
 		self.paintBlack = True
 
@@ -39,17 +79,18 @@ class BlindFold(ReporterPlugin):
 		switch = bool(self.showXHeight)
 		self.generalContextMenus = [
 			self.thisMenuTitle,
-			{"name": u"%s" % self.toggleNames[switch], "action": self.toggleHeight},
+			{"name": self.toggleNames[switch], "action": self.toggleHeight},
 			#{"name": u"%s" % self.toggleShadeNames[int(self.paintBlack)], "action": self.toggleShade},
 		]
 		self.showXHeight = not self.showXHeight
 		self.RefreshView()
 
+	@objc.python_method
 	def toggleShade(self):
 		switch = bool(self.paintBlack)
 		self.generalContextMenus = [
 			self.thisMenuTitle,
-			{"name": u"%s" % self.toggleNames[int(self.showXHeight)], "action": self.toggleHeight},
+			{"name": self.toggleNames[int(self.showXHeight)], "action": self.toggleHeight},
 			#{"name": u"%s" % self.toggleShadeNames[switch], "action": self.toggleShade },
 		]
 		self.paintBlack = not self.paintBlack
@@ -67,44 +108,54 @@ class BlindFold(ReporterPlugin):
 	def needsExtraMainOutlineDrawingForInactiveLayer_(self, Layer):
 		return True
 
-
 	@objc.python_method
 	def topY(self, layer): # coulf be used to automate the height
-		if glyphsVersion >= 3:
-			return layer.associatedFontMaster().topHeightForLayer_(layer)
-		else:
+		try:
+			# GLYPHS 3
+			return layer.master.topHeightForLayer_(layer)
+		except:
+			# GLYPHS 2
 			if layer.parent.subCategory == "Lowercase":
-				return layer.associatedFontMaster().xHeight
+				return layer.master.xHeight
 			else:
-				return layer.associatedFontMaster().capHeight
+				return layer.master.capHeight
 
 	@objc.python_method
 	def ascender(self, layer):
-		if glyphsVersion >= 3:
-			return layer.associatedFontMaster().ascenderForLayer_(layer)
-		else:
-			return layer.associatedFontMaster().ascender
+		try:
+			# GLYPHS 3
+			return layer.master.ascenderForLayer_(layer)
+		except:
+			# GLYPHS 2
+			return layer.master.ascender
 
 	@objc.python_method
 	def capHeight(self, layer):
-		if glyphsVersion >= 3:
-			return layer.associatedFontMaster().metricForKey_layer_(GSMetricsKeyCapHeight, layer)
-		else:
-			return layer.associatedFontMaster().capHeight
+		try:
+			# GLYPHS 3
+			return layer.master.metricForKey_layer_(GSMetricsKeyCapHeight, layer)
+		except:
+			# GLYPHS 2
+			return layer.master.capHeight
 
 	@objc.python_method
 	def xHeight(self, layer):
-		if glyphsVersion >= 3:
-			return layer.associatedFontMaster().xHeightForLayer_(layer)
-		else:
-			return layer.associatedFontMaster().xHeight
+		try:
+			# GLYPHS 3
+			return layer.master.xHeightForLayer_(layer)
+		except:
+			# GLYPHS 2
+			return layer.master.xHeight
 
 	@objc.python_method
 	def descender(self, layer):
-		if glyphsVersion >= 3:
-			return layer.associatedFontMaster().descenderForLayer_(layer)
-		else:
-			return layer.associatedFontMaster().descender
+		try:
+			# GLYPHS 3
+			return layer.master.descenderForLayer_(layer)
+		except:
+			# GLYPHS 2
+			return layer.master.descender
+			
 	@objc.python_method
 	def drawRect(self, layer, scale):
 		view = self.controller.graphicView()
@@ -112,7 +163,10 @@ class BlindFold(ReporterPlugin):
 		activePosition = view.activePosition()
 
 		UcLcCompensator = -600 / scale # avoid weird gap when a line starts with an UC and LC follow
-		relativePosition = NSMakePoint(math.floor((Visible.origin.x - activePosition.x) / scale), math.floor((NSMinY(Visible) - activePosition.y + Visible.size.height) / scale))
+		relativePosition = NSMakePoint(
+			floor((Visible.origin.x - activePosition.x) / scale), 
+			floor((NSMinY(Visible) - activePosition.y + Visible.size.height) / scale)
+			)
 
 		moreBlack = 70  # Optional: Additional Buffer to top and bottom
 
@@ -125,7 +179,7 @@ class BlindFold(ReporterPlugin):
 			'''	Rect 1: Descender '''
 			y = self.descender(layer) - moreBlack  # descender
 			height = (y * -1) + 1 # +1 closes the tiny gap
-			NSBezierPath.fillRect_(((relativePosition[0] + UcLcCompensator, y), ((math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale), height))))
+			NSBezierPath.fillRect_(((relativePosition[0] + UcLcCompensator, y), ((floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale), height))))
 
 			''' Rect 2: Ascender '''
 			# if self.sliderMenuView.group.PUButton.getTitle() == "Cap-Height":
@@ -137,9 +191,11 @@ class BlindFold(ReporterPlugin):
 				y = self.capHeight(layer) # capHeight
 
 			height = self.ascender(layer) + moreBlack - y + moreBlack # ascender - y
-			NSBezierPath.fillRect_(((relativePosition[0] + UcLcCompensator, y), ((math.floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale), height))))
-		except: pass
+			NSBezierPath.fillRect_(((relativePosition[0] + UcLcCompensator, y), ((floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale), height))))
+		except:
+			pass
 
+	@objc.python_method
 	def RefreshView(self):
 		try:
 			Glyphs = NSApplication.sharedApplication()
@@ -148,4 +204,9 @@ class BlindFold(ReporterPlugin):
 				currentTabView.graphicView().setNeedsDisplay_(True)
 		except:
 			pass
+
+	@objc.python_method
+	def __file__(self):
+		"""Please leave this method unchanged"""
+		return __file__
 
