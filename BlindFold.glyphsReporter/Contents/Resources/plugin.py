@@ -190,8 +190,7 @@ class BlindFold(ReporterPlugin):
 			else:
 				y = self.capHeight(layer) # capHeight
 
-			height = self.ascender(layer) + more
-			- y + moreBlack # ascender - y
+			height = self.ascender(layer) + moreBlack - y + moreBlack # ascender - y
 			NSBezierPath.fillRect_(((relativePosition[0] + UcLcCompensator, y), ((floor((Visible.size.width - UcLcCompensator + activePosition.x) / scale), height))))
 		except:
 			pass
